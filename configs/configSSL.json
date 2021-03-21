@@ -17,7 +17,7 @@
     "data": {
       "split_id_list": 0,
       "labeled_samples": 372,
-      "input_size": "512,512",
+      "input_size": "128,128",
       "scale": false,
       "crop": true
     },
@@ -39,7 +39,7 @@
 
   "utils": {
     "save_checkpoint_every": 5000,
-    "checkpoint_dir": "../saved/DeepLabv2",
+    "checkpoint_dir": "/home/jpho/git/ClassMix/DeepLabv2",
     "val_per_iter": 5000,
     "tensorboard": true,
     "log_per_iter": 100,

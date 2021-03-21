@@ -1,6 +1,8 @@
 import os
 import torch
+import imageio
 import numpy as np
+from PIL import Image
 import scipy.misc as m
 
 from torch.utils import data
@@ -66,7 +68,7 @@ class cityscapesLoader(data.Dataset):
         :param img_size:
         :param augmentations
         """
-        self.root = root
+        self.root = "/home/jpho/git/ClassMix/data/Cityscapes"
         self.split = split
         self.is_transform = is_transform
         self.augmentations = augmentations
@@ -78,9 +80,9 @@ class cityscapesLoader(data.Dataset):
         self.mean = img_mean
         self.files = {}
 
-        self.images_base = os.path.join(self.root, "leftImg8bit_trainvaltest","leftImg8bit", self.split)
+        self.images_base = os.path.join(self.root,"leftImg8bit", self.split)
         self.annotations_base = os.path.join(
-            self.root, "gtFine_trainvaltest", "gtFine", self.split
+            self.root, "gtFine", self.split
         )
 
         self.files[split] = recursive_glob(rootdir=self.images_base, suffix=".png")
@@ -149,7 +151,7 @@ class cityscapesLoader(data.Dataset):
             img, lbl = self.augmentations(img, lbl)
 
         if self.is_transform:
-            img, lbl = self.transform(img, lbl)
+            img, lbl = self.transform(img, lbl) ##ERROR
 
         img_name = img_path.split('/')[-1]
         if self.return_id:
@@ -162,9 +164,14 @@ class cityscapesLoader(data.Dataset):
         :param img:
         :param lbl:
         """
+        print(self.img_size)
+        #img = np.array(Image.fromarray(img).resize(size=(self.img_size[0], self.img_size[1])))
+        # Commented because m.imresize is deprecated.
         img = m.imresize(
             img, (self.img_size[0], self.img_size[1])
         )  # uint8 with RGB mode
+        #print('IMAGE FOR DEBUGGING')
+        #print(img)
         img = img[:, :, ::-1]  # RGB -> BGR
         img = img.astype(np.float64)
         img -= self.mean
@@ -177,7 +184,10 @@ class cityscapesLoader(data.Dataset):
 
         classes = np.unique(lbl)
         lbl = lbl.astype(float)
+        #lbl = np.array(Image.fromarray(lbl).resize(size=(self.img_size[0], self.img_size[1])))
+        # Commented because m.imsize is deprecated
         lbl = m.imresize(lbl, (self.img_size[0], self.img_size[1]), "nearest", mode="F")
+
         lbl = lbl.astype(int)
         if not np.all(classes == np.unique(lbl)):
             print("WARN: resizing labels yielded fewer classes")

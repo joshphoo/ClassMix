@@ -46,6 +46,9 @@ from evaluateSSL import evaluate
 
 import time
 
+import torch
+torch.cuda.empty_cache()
+
 start = timeit.default_timer()
 start_writeable = datetime.datetime.now().strftime('%m-%d_%H-%M')
 
